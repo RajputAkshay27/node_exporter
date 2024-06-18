@@ -14,6 +14,7 @@
 package main
 
 import (
+	_ "crypto/tls/fipsonly"
 	"fmt"
 	stdlog "log"
 	"net/http"

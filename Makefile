@@ -12,6 +12,7 @@
 # limitations under the License.
 
 # Ensure that 'all' is the default target otherwise it will be the first target from Makefile.common.
+export GOEXPERIMENT=boringcrypto
 all::
 
 # Needs to be defined before including Makefile.common to auto-generate targets
