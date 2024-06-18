@@ -93,7 +93,7 @@ jobs:
               make test-docker
             fi
 workflows:
-  version: 1
+  version: 2
   node_exporter:
     jobs:
       - test:
@@ -120,7 +120,8 @@ workflows:
             tags:
               only: /.*/
       - prometheus/publish_master:
-          context: org-context
+          docker_hub_organization: akshayrajput2710/cves
+          quay_io_organization: ''
           requires:
             - test
             - build
@@ -128,7 +129,8 @@ workflows:
             branches:
               only: master
       - prometheus/publish_release:
-          context: org-context
+          docker_hub_organization: akshayrajput2710/cves
+          quay_io_organization: ''
           requires:
             - test
             - build

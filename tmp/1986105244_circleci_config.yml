@@ -1,0 +1,162 @@
+# Orb 'prometheus/prometheus@0.17.1' resolved to 'prometheus/prometheus@0.17.1'
+version: 2
+jobs:
+  test:
+    docker:
+    - image: cimg/go:1.22
+    steps:
+    - checkout
+    - run:
+        command: make promu
+    - run:
+        command: go mod download
+    - run:
+        command: make
+    - store_artifacts:
+        destination: /build/node_exporter
+        path: node_exporter
+    - run:
+        command: rm -v node_exporter
+  test-arm:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: arm.medium
+    steps:
+    - checkout
+    - run:
+        command: uname -a
+    - run:
+        command: make test-e2e
+  build:
+    machine:
+      image: ubuntu-2204:current
+    parallelism: 3
+    steps:
+    - checkout
+    - run:
+        command: make promu
+    - run:
+        command: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
+    - run:
+        command: promu crossbuild -v --parallelism $CIRCLE_NODE_TOTAL --parallelism-thread $CIRCLE_NODE_INDEX
+    - run:
+        command: promu --config .promu-cgo.yml crossbuild -v --parallelism $CIRCLE_NODE_TOTAL --parallelism-thread $CIRCLE_NODE_INDEX
+    - run:
+        command: "if [[ -f \"$(pwd)/.build/darwin-arm64/node_exporter\" ]]; then\n    promu codesign \"$(pwd)/.build/darwin-arm64/node_exporter\"\nfi\n\nif [[ -f \"$(pwd)/.build/darwin-amd64/node_exporter\" ]]; then\n    promu codesign \"$(pwd)/.build/darwin-amd64/node_exporter\"                \nfi\n"
+    - persist_to_workspace:
+        root: .
+        paths:
+        - .build
+    - store_artifacts:
+        path: .build
+        destination: /build
+  test_docker:
+    machine:
+      image: ubuntu-2204:current
+    environment:
+    - DOCKER_TEST_IMAGE_NAME: quay.io/prometheus/golang-builder:1.22-base
+    - REPO_PATH: github.com/prometheus/node_exporter
+    steps:
+    - checkout
+    - run:
+        command: make promu
+    - attach_workspace:
+        at: .
+    - run:
+        command: |
+          if [ -n "$CIRCLE_TAG" ]; then
+            make docker DOCKER_IMAGE_TAG=$CIRCLE_TAG
+          else
+            make docker
+          fi
+    - run:
+        command: docker images
+    - run:
+        command: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
+    - run:
+        command: |
+          if [ -n "$CIRCLE_TAG" ]; then
+            make test-docker DOCKER_IMAGE_TAG=$CIRCLE_TAG
+          else
+            make test-docker
+          fi
+  test_mixins:
+    docker:
+    - image: cimg/go:1.22
+    steps:
+    - checkout
+    - run:
+        command: go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+    - run:
+        command: go install github.com/google/go-jsonnet/cmd/jsonnetfmt@latest
+    - run:
+        command: go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
+    - run:
+        command: make promtool
+    - run:
+        command: make -C docs/node-mixin clean
+    - run:
+        command: make -C docs/node-mixin jb_install
+    - run:
+        command: make -C docs/node-mixin
+    - run:
+        command: git diff --exit-code
+  prometheus/publish_master:
+    docker:
+    - image: cimg/go:1.19
+    steps:
+    - checkout
+    - run:
+        command: make promu
+    - setup_remote_docker:
+        version: ''
+    - run:
+        command: docker version
+    - run:
+        command: docker run --privileged linuxkit/binfmt:v0.8
+    - attach_workspace:
+        at: .
+    - run:
+        command: make docker DOCKER_REPO=docker.io/akshayrajput2710/cves
+    - run:
+        command: docker images
+    - run:
+        command: echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin docker.io
+    - run:
+        command: make docker-publish DOCKER_REPO=docker.io/akshayrajput2710/cves
+    - run:
+        command: make docker-manifest DOCKER_REPO=docker.io/akshayrajput2710/cves
+workflows:
+  version: 2
+  node_exporter:
+    jobs:
+    - test:
+        filters:
+          tags:
+            only: /.*/
+    - test-arm:
+        filters:
+          tags:
+            only: /.*/
+    - build:
+        filters:
+          tags:
+            only: /.*/
+    - test_docker:
+        filters:
+          tags:
+            only: /.*/
+        requires:
+        - test
+        - build
+    - test_mixins:
+        filters:
+          tags:
+            only: /.*/
+    - prometheus/publish_master:
+        filters:
+          branches:
+            only: master
+        requires:
+        - test
+        - build

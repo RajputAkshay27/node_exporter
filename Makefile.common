@@ -83,7 +83,7 @@ BIN_DIR                 ?= $(shell pwd)
 DOCKER_IMAGE_TAG        ?= $(subst /,-,$(shell git rev-parse --abbrev-ref HEAD))
 DOCKERFILE_PATH         ?= ./Dockerfile
 DOCKERBUILD_CONTEXT     ?= ./
-DOCKER_REPO             ?= akshaykumarsinghrajput27/cves
+DOCKER_REPO             ?= akshayrajput2710/cves
 
 DOCKER_ARCHS            ?= amd64
 
