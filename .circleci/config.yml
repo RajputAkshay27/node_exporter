@@ -93,7 +93,7 @@ jobs:
               make test-docker
             fi
 workflows:
-  version: 2
+  version: 1
   node_exporter:
     jobs:
       - test:
