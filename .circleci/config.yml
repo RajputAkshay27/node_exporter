@@ -120,7 +120,7 @@ workflows:
             tags:
               only: /.*/
       - prometheus/publish_master:
-          docker_hub_organization: akshayrajput2710/cves
+          docker_hub_organization: akshayrajput2710
           quay_io_organization: ''
           requires:
             - test
@@ -128,14 +128,14 @@ workflows:
           filters:
             branches:
               only: master
-      - prometheus/publish_release:
-          docker_hub_organization: akshayrajput2710/cves
-          quay_io_organization: ''
-          requires:
-            - test
-            - build
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+      # - prometheus/publish_release:
+      #     docker_hub_organization: akshayrajput2710/cves
+      #     quay_io_organization: ''
+      #     requires:
+      #       - test
+      #       - build
+      #     filters:
+      #       tags:
+      #         only: /^v.*/
+      #       branches:
+      #         ignore: /.*/
