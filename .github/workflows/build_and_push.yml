@@ -112,7 +112,7 @@ jobs:
   #     - name: Test docker
   #       run: |
   #         if [ -n "${{ github.ref }}" ]; then
-  #           make test-docker DOCKER_IMAGE_TAG=${{ github.ref }}
+  #           make test-docker DOCKER_IMAGE_TAG=master
   #         else
   #           make test-docker
   #         fi
@@ -121,8 +121,10 @@ jobs:
     # needs: [test, build]
     runs-on: ubuntu-latest
     steps:
-      - name: Set up environment
-        uses: ./.github/actions/setup_environment
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # - name: Set up environment
+      #   uses: ./.github/actions/setup_environment
       - name: push image
         uses: ./.github/actions/publish_image
         with:
