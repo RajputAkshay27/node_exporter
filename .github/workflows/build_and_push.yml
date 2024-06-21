@@ -111,10 +111,6 @@ jobs:
     needs: [test, build]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: setup promu
-        run: make promu 
       - name: Set up environment
         run: ./github/actions/setup_environment.yml
       - name: push image
