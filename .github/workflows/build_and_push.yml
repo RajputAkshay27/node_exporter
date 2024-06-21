@@ -124,9 +124,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up environment
-        uses: .github/actions/setup_environment
+        uses: ".github/actions/setup_environment"
       - name: push image
-        uses: .github/actions/publish_image
+        uses: ".github/actions/publish_image"
         with:
           DOCKER_IMAGE_NAME: node_exporter
           REGISTRY: docker.io # need to change this to your registry
