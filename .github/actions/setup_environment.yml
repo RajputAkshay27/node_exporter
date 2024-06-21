@@ -13,6 +13,11 @@ runs:
 
     - name: setup promu
         run: make promu 
+    
+    - name: Add promu to PATH
+        run: |
+          export GOPATH=/home/runner/go
+          echo /home/runner/go/bin >> $GITHUB_PATH
 
     - name: Setup Docker
       uses: docker/setup-docker-buildx-action@v1

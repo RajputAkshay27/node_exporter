@@ -20,4 +20,4 @@ tarball:
 crossbuild:
     platforms:
         - linux
-        - openbsd/amd64
+        # - openbsd/amd64

@@ -13,24 +13,24 @@ env:
   REPO_PATH: github.com/RajputAkshay27/node_exporter
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: cimg/go:1.22
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Set up environment
-  #       run: make promu
-  #     - name: Download Go modules
-  #       run: go mod download
-  #     - name: Make
-  #       run: make
-  #     - name: Store artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: node_exporter
-  #         path: node_exporter
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/go:1.22
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up environment
+        run: make promu
+      - name: Download Go modules
+        run: go mod download
+      - name: Make
+        run: make
+      - name: Store artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: node_exporter
+          path: node_exporter
 
   # test-arm:
   #   runs-on: self-hosted
@@ -42,29 +42,29 @@ jobs:
   #     - name: Make test-e2e
   #       run: make test-e2e
 
-  # test_mixins:
-  #   runs-on: ubuntu-latest
-  #   container:
-  #     image: cimg/go:1.22
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Install jsonnet
-  #       run: go install github.com/google/go-jsonnet/cmd/jsonnet@latest
-  #     - name: Install jsonnetfmt
-  #       run: go install github.com/google/go-jsonnet/cmd/jsonnetfmt@latest
-  #     - name: Install jb
-  #       run: go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
-  #     - name: Make promtool
-  #       run: make promtool
-  #     - name: Clean docs/node-mixin
-  #       run: make -C docs/node-mixin clean
-  #     - name: Install jb in docs/node-mixin
-  #       run: make -C docs/node-mixin jb_install
-  #     - name: Make docs/node-mixin
-  #       run: make -C docs/node-mixin
-  #     - name: Check for changes
-  #       run: git diff --exit-code
+  test_mixins:
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/go:1.22
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install jsonnet
+        run: go install github.com/google/go-jsonnet/cmd/jsonnet@latest
+      - name: Install jsonnetfmt
+        run: go install github.com/google/go-jsonnet/cmd/jsonnetfmt@latest
+      - name: Install jb
+        run: go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
+      - name: Make promtool
+        run: make promtool
+      - name: Clean docs/node-mixin
+        run: make -C docs/node-mixin clean
+      - name: Install jb in docs/node-mixin
+        run: make -C docs/node-mixin jb_install
+      - name: Make docs/node-mixin
+        run: make -C docs/node-mixin
+      - name: Check for changes
+        run: git diff --exit-code
 
   build:
     runs-on: ubuntu-latest
@@ -77,8 +77,6 @@ jobs:
         run: |
           export GOPATH=/home/runner/go
           echo /home/runner/go/bin >> $GITHUB_PATH
-      - name: promu version
-        run: promu version 
       - name: Run docker command
         run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
       - name: Run promu crossbuild
@@ -89,45 +87,49 @@ jobs:
           name: build
           path: .build
 
-  # test_docker:
-  #   needs: [test, build]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Set up environment
-  #       run: echo "Set up environment here"
-  #     - name: Download build artifacts
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: build
-  #     - name: Make docker
-  #       run: |
-  #         if [ -n "${{ github.ref }}" ]; then
-  #           make docker DOCKER_IMAGE_TAG=${{ github.ref }}
-  #         else
-  #           make docker
-  #         fi
-  #     - name: Docker images
-  #       run: docker images
-  #     - name: Docker run
-  #       run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
-  #     - name: Test docker
-  #       run: |
-  #         if [ -n "${{ github.ref }}" ]; then
-  #           make test-docker DOCKER_IMAGE_TAG=${{ github.ref }}
-  #         else
-  #           make test-docker
-  #         fi
+  test_docker:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment
+        run: make promu
+      - name: Add promu to PATH
+        run: |
+          export GOPATH=/home/runner/go
+          echo /home/runner/go/bin >> $GITHUB_PATH
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+      - name: Make docker
+        run: |
+          if [ -n "${{ github.ref }}" ]; then
+            make docker DOCKER_IMAGE_TAG=${{ github.ref }}
+          else
+            make docker
+          fi
+      - name: Docker images
+        run: docker images
+      - name: Docker run
+        run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
+      - name: Test docker
+        run: |
+          if [ -n "${{ github.ref }}" ]; then
+            make test-docker DOCKER_IMAGE_TAG=${{ github.ref }}
+          else
+            make test-docker
+          fi
 
-  # push:
-  #   needs: [test, build]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Set up environment
-  #       run: ./github/actions/setup_environment.yml
-  #     - name: push image
-  #       uses: ./.github/actions/publish_image.yml
-  #       with:
-  #         DOCKER_IMAGE_NAME: node_exporter
-  #         REGISTRY: docker.io # need to change this to your registry
-  #         ORGANIZATION: akshayrajput2710   # need to change this to your organization
+  push:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up environment
+        run: ./github/actions/setup_environment.yml
+      - name: push image
+        uses: ./.github/actions/publish_image.yml
+        with:
+          DOCKER_IMAGE_NAME: node_exporter
+          REGISTRY: docker.io # need to change this to your registry
+          ORGANIZATION: akshayrajput2710   # need to change this to your organization
     
