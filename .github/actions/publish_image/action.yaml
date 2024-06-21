@@ -22,48 +22,48 @@ inputs:
     required: true
 
 runs:
+  using: "composite"  
+  steps:
+  - name: Checkout code
+    uses: actions/checkout@v2
     
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      
-    - name: Set Environment Variables
-      if: ${{ inputs.DOCKERFILE_PATH != '' }}
-      run: |
-        echo "DOCKERFILE_PATH=${{ env.DOCKERFILE_PATH }}" >> $GITHUB_ENV
-      shell: bash
+  - name: Set Environment Variables
+    if: ${{ inputs.DOCKERFILE_PATH != '' }}
+    run: |
+      echo "DOCKERFILE_PATH=${{ env.DOCKERFILE_PATH }}" >> $GITHUB_ENV
+    shell: bash
 
-    - name: Set Environment Variables
-      if: ${{ inputs.DOCKER_IMAGE_NAME != '' }}
-      run: |
-        echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> $GITHUB_ENV
-      shell: bash
-      
-    - name: Set Environment Variables
-      if: ${{ inputs.DOCKERBUILD_CONTEXT != '' }}
-      run: |
-        echo "DOCKERBUILD_CONTEXT=${{ env.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
-      shell: bash
+  - name: Set Environment Variables
+    if: ${{ inputs.DOCKER_IMAGE_NAME != '' }}
+    run: |
+      echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> $GITHUB_ENV
+    shell: bash
+    
+  - name: Set Environment Variables
+    if: ${{ inputs.DOCKERBUILD_CONTEXT != '' }}
+    run: |
+      echo "DOCKERBUILD_CONTEXT=${{ env.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
+    shell: bash
 
-    - name: Setup Docker
-      uses: docker/setup-buildx-action@v1
+  - name: Setup Docker
+    uses: docker/setup-buildx-action@v1
 
-    - name: Build Docker Image
-      run: make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
-      shell: bash
-      
-    - name: List Docker Images
-      run: docker images
-      shell: bash
+  - name: Build Docker Image
+    run: make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+    shell: bash
+    
+  - name: List Docker Images
+    run: docker images
+    shell: bash
 
-    - name: Docker Login
-      run: echo ${{ env.DOCKER_PASSWORD }} | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin ${{ env.REGISTRY }}
-      shell: bash
+  - name: Docker Login
+    run: echo ${{ env.DOCKER_PASSWORD }} | docker login -u ${{ env.DOCKER_USERNAME }} --password-stdin ${{ env.REGISTRY }}
+    shell: bash
 
-    - name: Publish Docker Image
-      run: make docker-publish DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
-      shell: bash
+  - name: Publish Docker Image
+    run: make docker-publish DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+    shell: bash
 
-    - name: Manifest Docker Image
-      run: make docker-manifest DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
-      shell: bash
+  - name: Manifest Docker Image
+    run: make docker-manifest DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+    shell: bash
