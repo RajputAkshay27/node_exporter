@@ -101,7 +101,7 @@ jobs:
       - name: Make docker
         run: |
           if [ -n "${{ github.ref }}" ]; then
-            make docker DOCKER_IMAGE_TAG=latest
+            make docker DOCKER_IMAGE_TAG=master
           else
             make docker
           fi
@@ -121,10 +121,12 @@ jobs:
     needs: [test, build]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up environment
-        run: ./.github/actions/setup_environment.yml
+        run: .github/actions/setup_environment.yml
       - name: push image
-        uses: ./.github/actions/publish_image.yml
+        uses: .github/actions/publish_image.yml
         with:
           DOCKER_IMAGE_NAME: node_exporter
           REGISTRY: docker.io # need to change this to your registry
