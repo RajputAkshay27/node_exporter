@@ -66,6 +66,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Set up environment
+        run: make promu
+      - name: Add promu to PATH
+        run: echo "$PWD" >> $GITHUB_PATH
       - name: promu version
         run: promu version 
       - name: Run docker command
