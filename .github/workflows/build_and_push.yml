@@ -86,6 +86,8 @@ jobs:
     needs: [test, build]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up environment
         run: make promu
       - name: Add promu to PATH
@@ -119,6 +121,8 @@ jobs:
     needs: [test, build]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up environment
         run: ./github/actions/setup_environment.yml
       - name: push image
