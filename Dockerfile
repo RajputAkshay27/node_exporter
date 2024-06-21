@@ -5,7 +5,6 @@ LABEL maintainer="The Prometheus Authors <prometheus-developers@googlegroups.com
 
 ARG ARCH="amd64"
 ARG OS="linux"
-RUN "echo $PWD"
 COPY .build/${OS}-${ARCH}/node_exporter /bin/node_exporter
 
 EXPOSE      9100
