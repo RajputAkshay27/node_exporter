@@ -45,6 +45,7 @@ runs:
   - name: Build Docker Image
     run: |
       echo $PWD
+      ls -lR $PWD/.build/
       make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
     shell: bash
     
