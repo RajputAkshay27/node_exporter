@@ -13,7 +13,7 @@ inputs:
   DOCKERBUILD_CONTEXT:
     description: 'Path to Docker build context'
     required: false
-    default: '~/work/node_exporter/node_exporter'
+    default: ''
   REGISTRY:
     description: 'Docker registry'
     required: true
