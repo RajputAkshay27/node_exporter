@@ -2,6 +2,11 @@ name: image generation
 
 on:
   workflow_dispatch:
+    inputs:
+      promu_path:
+        description: 'Path to promu'
+        required: true
+        default: '/home/runner/go/bin/'
 
 env:
   DOCKER_TEST_IMAGE_NAME: quay.io/prometheus/golang-builder:1.22-base
@@ -69,7 +74,7 @@ jobs:
       - name: Set up environment
         run: make promu
       - name: Add promu to PATH
-        run: echo "$PWD" >> $GITHUB_PATH
+        run: echo inputs.promu_path >> $GITHUB_PATH
       - name: promu version
         run: promu version 
       - name: Run docker command
