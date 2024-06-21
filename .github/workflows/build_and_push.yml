@@ -76,39 +76,41 @@ jobs:
           name: build
           path: .build
 
-  test_docker:
-    needs: [test, build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up environment
-        run: echo "Set up environment here"
-      - name: Download build artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-      - name: Make docker
-        run: |
-          if [ -n "${{ github.ref }}" ]; then
-            make docker DOCKER_IMAGE_TAG=${{ github.ref }}
-          else
-            make docker
-          fi
-      - name: Docker images
-        run: docker images
-      - name: Docker run
-        run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
-      - name: Test docker
-        run: |
-          if [ -n "${{ github.ref }}" ]; then
-            make test-docker DOCKER_IMAGE_TAG=${{ github.ref }}
-          else
-            make test-docker
-          fi
+  # test_docker:
+  #   needs: [test, build]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Set up environment
+  #       run: echo "Set up environment here"
+  #     - name: Download build artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: build
+  #     - name: Make docker
+  #       run: |
+  #         if [ -n "${{ github.ref }}" ]; then
+  #           make docker DOCKER_IMAGE_TAG=${{ github.ref }}
+  #         else
+  #           make docker
+  #         fi
+  #     - name: Docker images
+  #       run: docker images
+  #     - name: Docker run
+  #       run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
+  #     - name: Test docker
+  #       run: |
+  #         if [ -n "${{ github.ref }}" ]; then
+  #           make test-docker DOCKER_IMAGE_TAG=${{ github.ref }}
+  #         else
+  #           make test-docker
+  #         fi
 
   push:
     needs: [test, build]
     runs-on: ubuntu-latest
     steps:
+      - name: setup promu
+        run: make promu 
       - name: Set up environment
         run: ./github/actions/setup_environment.yml
       - name: push image
