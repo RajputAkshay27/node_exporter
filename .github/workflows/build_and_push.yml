@@ -2,11 +2,6 @@ name: image generation
 
 on:
   workflow_dispatch:
-    inputs:
-      promu_path:
-        description: 'Path to promu'
-        required: true
-        default: '/home/runner/go/bin/'
 
 env:
   DOCKER_TEST_IMAGE_NAME: quay.io/prometheus/golang-builder:1.22-base
