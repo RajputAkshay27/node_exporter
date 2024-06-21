@@ -8,24 +8,24 @@ env:
   REPO_PATH: github.com/RajputAkshay27/node_exporter
 
 jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     container:
-#       image: cimg/go:1.22
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v2
-#       - name: Set up environment
-#         run: make promu
-#       - name: Download Go modules
-#         run: go mod download
-#       - name: Make
-#         run: make
-#       - name: Store artifact
-#         uses: actions/upload-artifact@v2
-#         with:
-#           name: node_exporter
-#           path: node_exporter
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/go:1.22
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up environment
+        run: make promu
+      - name: Download Go modules
+        run: go mod download
+      - name: Make
+        run: make
+      - name: Store artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: node_exporter
+          path: node_exporter
 
   # test-arm:
   #   runs-on: self-hosted
@@ -61,26 +61,26 @@ jobs:
   #     - name: Check for changes
   #       run: git diff --exit-code
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Set up environment
-  #       run: make promu
-  #     - name: Add promu to PATH
-  #       run: |
-  #         export GOPATH=/home/runner/go
-  #         echo /home/runner/go/bin >> $GITHUB_PATH
-  #     - name: Run docker command
-  #       run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
-  #     - name: Run promu crossbuild
-  #       run: promu crossbuild -v
-  #     - name: Upload build artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: build
-          # path: .build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up environment
+        run: make promu
+      - name: Add promu to PATH
+        run: |
+          export GOPATH=/home/runner/go
+          echo /home/runner/go/bin >> $GITHUB_PATH
+      - name: Run docker command
+        run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
+      - name: Run promu crossbuild
+        run: promu crossbuild -v
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: .build
 
   # test_docker:
   #   needs: [test, build]
@@ -118,7 +118,7 @@ jobs:
   #         fi
 
   push:
-    # needs: [test, build]
+    needs: [test, build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

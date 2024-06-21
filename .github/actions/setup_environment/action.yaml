@@ -10,11 +10,13 @@ runs:
   steps:
   - name: setup promu
     run: make promu 
+    shell: bash
   
   - name: Add promu to PATH
     run: |
       export GOPATH=/home/runner/go
       echo /home/runner/go/bin >> $GITHUB_PATH
+    shell: bash
 
   - name: Setup Docker
     uses: docker/setup-docker-buildx-action@v1
@@ -23,9 +25,11 @@ runs:
       
   - name: Display Docker version
     run: docker version
+    shell: bash
     
   - name: Run Docker command
     run: docker run --privileged linuxkit/binfmt:v0.8
+    shell: bash
     
   - name: Attach Workspace
     uses: actions/upload-artifact@v2
