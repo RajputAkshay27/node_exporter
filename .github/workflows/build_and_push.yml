@@ -131,4 +131,6 @@ jobs:
           DOCKER_IMAGE_NAME: node_exporter
           REGISTRY: docker.io # need to change this to your registry
           ORGANIZATION: akshayrajput2710   # need to change this to your organization
-    
+        secrets:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
