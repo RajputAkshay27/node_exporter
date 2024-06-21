@@ -42,11 +42,18 @@ runs:
       echo "DOCKERBUILD_CONTEXT=${{ inputs.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
     shell: bash 
 
+  - name: download artifact
+    uses: actions/download-artifact@v2
+    with:
+      name: build
+      path: .build
+
+  - name: check files
+    run: ls -la .build
+    shell: bash
+
   - name: Build Docker Image
-    run: |
-      echo $PWD
-      ls -l -a -R $PWD
-      make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+    run: make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
     shell: bash
     
   - name: List Docker Images
