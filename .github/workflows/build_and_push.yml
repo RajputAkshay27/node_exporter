@@ -75,9 +75,7 @@ jobs:
         run: make promu
       - name: Add promu to PATH
         run: |
-          echo ~
-          echo $PWD
-          go env
+          echo $GOPATH
           echo inputs.promu_path >> $GITHUB_PATH
       - name: promu version
         run: promu version 
