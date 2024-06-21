@@ -76,7 +76,7 @@ jobs:
       - name: Add promu to PATH
         run: |
           export GOPATH=/home/runner/go
-          echo /home/runner/go >> $GITHUB_PATH
+          echo /home/runner/go/bin >> $GITHUB_PATH
       - name: promu version
         run: promu version 
       - name: Run docker command
