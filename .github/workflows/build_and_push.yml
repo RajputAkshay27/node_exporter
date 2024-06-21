@@ -74,7 +74,11 @@ jobs:
       - name: Set up environment
         run: make promu
       - name: Add promu to PATH
-        run: echo inputs.promu_path >> $GITHUB_PATH
+        run: |
+          echo ~
+          echo $PWD
+          go env
+          echo inputs.promu_path >> $GITHUB_PATH
       - name: promu version
         run: promu version 
       - name: Run docker command
