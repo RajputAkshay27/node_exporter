@@ -44,6 +44,10 @@ runs:
 
   - name: Setup Docker
     uses: docker/setup-buildx-action@v1
+  
+  - name: present working directory
+    run: echo $PWD
+    shell: bash
 
   - name: Build Docker Image
     run: make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
