@@ -39,7 +39,7 @@ runs:
   - name: Set Environment Variables
     if: ${{ inputs.DOCKERBUILD_CONTEXT != '' }}
     run: |
-      echo "DOCKERBUILD_CONTEXT=${{ env.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
+      echo "DOCKERBUILD_CONTEXT=${{ inputs.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
     shell: bash
 
   - name: Setup Docker
