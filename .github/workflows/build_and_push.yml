@@ -7,7 +7,7 @@ env:
   DOCKER_TEST_IMAGE_NAME: quay.io/prometheus/golang-builder:1.22-base
   REPO_PATH: github.com/RajputAkshay27/node_exporter
 
-# jobs:
+jobs:
 #   test:
 #     runs-on: ubuntu-latest
 #     container:
