@@ -129,7 +129,7 @@ workflows:
             branches:
               only: master
       # - prometheus/publish_release:
-      #     docker_hub_organization: akshayrajput2710/cves
+      #     docker_hub_organization: akshayrajput2710
       #     quay_io_organization: ''
       #     requires:
       #       - test

@@ -1,0 +1,32 @@
+name: Setup Build Environment
+
+inputs:
+  DOCKER_VERSION:
+    description: 'Docker version'
+    required: true
+
+runs:
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: setup promu
+      run: make promu 
+
+    - name: Setup Docker
+      uses: docker/setup-docker-buildx-action@v1
+      with:
+        version: ${{ env.DOCKER_VERSION }}
+        
+    - name: Display Docker version
+      run: docker version
+      
+    - name: Run Docker command
+      run: docker run --privileged linuxkit/binfmt:v0.8
+      
+    - name: Attach Workspace
+      uses: actions/upload-artifact@v2
+      with:
+        name: workspace
+        path: .

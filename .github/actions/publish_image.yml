@@ -1,0 +1,61 @@
+name: Build and Publish Images
+
+
+inputs:
+  DOCKERFILE_PATH:
+    description: 'Path to Dockerfile'
+    required: false
+    default: ''
+  DOCKER_IMAGE_NAME:
+    description: 'Name of Docker image'
+    required: true
+    default: 'node_exporter'
+  DOCKERBUILD_CONTEXT:
+    description: 'Path to Docker build context'
+    required: false
+    default: ''
+  REGISTRY:
+    description: 'Docker registry'
+    required: true
+  ORGANIZATION:
+    description: 'Docker organization'
+    required: true
+
+runs:
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set Environment Variables
+      if: ${{ inputs.DOCKERFILE_PATH != '' }}
+      run: |
+        echo "DOCKERFILE_PATH=${{ env.DOCKERFILE_PATH }}" >> $GITHUB_ENV
+
+      name: Set Environment Variables
+      if: ${{ inputs.DOCKER_IMAGE_NAME != '' }}
+      run: |
+        echo "DOCKER_IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}" >> $GITHUB_ENV
+      
+      name: Set Environment Variables
+      if: ${{ inputs.DOCKERBUILD_CONTEXT != '' }}
+      run: |
+        echo "DOCKERBUILD_CONTEXT=${{ env.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
+
+    - name: Setup Docker
+      uses: docker/setup-docker-buildx-action@v1
+
+    - name: Build Docker Image
+      run: make docker DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+      
+    - name: List Docker Images
+      run: docker images
+      
+    - name: Docker Login
+      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ env.REGISTRY }}
+      
+    - name: Publish Docker Image
+      run: make docker-publish DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
+      
+    - name: Manifest Docker Image
+      run: make docker-manifest DOCKER_REPO=${{ inputs.REGISTRY }}/${{ inputs.ORGANIZATION }}
