@@ -1,12 +1,12 @@
-ARG ARCH="amd64"
+ARG ARCH="arm64"
 ARG OS="linux"
 FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
 
-ARG ARCH="amd64"
+ARG ARCH="arm64"
 ARG OS="linux"
-COPY .build/${OS}-${ARCH}/node_exporter /bin/node_exporter
+ADD .build/${OS}-${ARCH}/node_exporter /bin/node_exporter
 
-RUN chmod +x "/bin/node_exporter"
+# RUN chmod -R 777 ./bin/node_exporter
 
 EXPOSE      9100
 USER        nobody
