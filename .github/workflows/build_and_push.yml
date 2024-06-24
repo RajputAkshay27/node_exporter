@@ -61,29 +61,7 @@ jobs:
   #     - name: Check for changes
   #       run: git diff --exit-code
 
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Set up environment
-  #       run: make promu
-  #     - name: Add promu to PATH
-  #       run: |
-  #         export GOPATH=/home/runner/go
-  #         echo /home/runner/go/bin >> $GITHUB_PATH
-  #     - name: Run docker command
-  #       run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
-  #     - name: Run promu crossbuild
-  #       run: promu crossbuild -v
-  #     - name: Upload build artifacts
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         name: build
-  #         path: .build
-
-  test_docker:
-    # needs: [build]
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -94,6 +72,33 @@ jobs:
         run: |
           export GOPATH=/home/runner/go
           echo /home/runner/go/bin >> $GITHUB_PATH
+      - name: Run docker command
+        run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
+      - name: Run promu crossbuild
+        run: promu crossbuild -v
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: .build
+
+  test_docker:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up environment
+        run: make promu
+      - name: Add promu to PATH
+        run: |
+          export GOPATH=/home/runner/go
+          echo /home/runner/go/bin >> $GITHUB_PATH
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: .build
       - name: Get docker image tag
         run: |
           export DOCKER_IMAGE_TAG=$(echo $(git rev-parse --abbrev-ref HEAD))
