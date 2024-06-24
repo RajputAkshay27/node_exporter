@@ -99,10 +99,12 @@ jobs:
         with:
           name: build
           path: .build
+      - name: Get docker image tag
+        run: export DOCKER_IMAGE_TAG=$(subst /,-,$(shell git rev-parse --abbrev-ref HEAD))
       - name: Make docker
         run: |
           if [ -n "${{ github.ref }}" ]; then
-            make docker DOCKER_IMAGE_TAG=master
+            make docker DOCKER_IMAGE_TAG=$(DOCKER_IMAGE_TAG)
           else
             make docker
           fi
@@ -113,7 +115,7 @@ jobs:
       - name: Test docker
         run: |
           if [ -n "${{ github.ref }}" ]; then
-            make test-docker DOCKER_IMAGE_TAG=master
+            make test-docker DOCKER_IMAGE_TAG=$(DOCKER_IMAGE_TAG)
           else
             make test-docker
           fi
