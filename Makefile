@@ -16,7 +16,7 @@ export GOEXPERIMENT=boringcrypto
 all::
 
 # Needs to be defined before including Makefile.common to auto-generate targets
-DOCKER_ARCHS ?= amd64 arm64 
+DOCKER_ARCHS ?= amd64 
 
 include Makefile.common
 
