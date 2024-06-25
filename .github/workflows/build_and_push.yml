@@ -14,7 +14,7 @@ jobs:
       image: cimg/go:1.22
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up environment
         run: make promu
       - name: Download Go modules
@@ -31,7 +31,7 @@ jobs:
   #   runs-on: self-hosted
   #   steps:
   #     - name: Checkout code
-  #       uses: actions/checkout@v2
+  #       uses: actions/checkout@v4
   #     - name: Run uname -a
   #       run: uname -a
   #     - name: Make test-e2e
@@ -43,7 +43,7 @@ jobs:
       image: cimg/go:1.22
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install jsonnet
         run: go install github.com/google/go-jsonnet/cmd/jsonnet@latest
       - name: Install jsonnetfmt
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up environment
         run: make promu
       - name: Add promu to PATH
@@ -87,24 +87,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up environment
-        uses: ./.github/actions/setup_environment
-      - name: Download env artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/checkout@v4
+
+      - name: Setup Docker
+        uses: docker/setup-buildx-action@v1
         with:
-          name: workspace
-          path: .
+          version: ${{ env.DOCKER_VERSION }}
+          
+      - name: Display Docker version
+        run: docker version
+        
+      - name: Run Docker command
+        run: docker run --privileged linuxkit/binfmt:v0.8
+
       - name: Download build artifacts
         uses: actions/download-artifact@v2
         with:
           name: build
           path: .build
+
       - name: Get docker image tag
         run: |
           export IMAGE_TAG=$(echo $(git rev-parse --abbrev-ref HEAD))
           echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
           echo ${IMAGE_TAG}
+
       - name: Make docker
         run: |
           if [ -n "${{ github.ref }}" ]; then
@@ -112,10 +119,13 @@ jobs:
           else
             make docker
           fi
+
       - name: Docker images
         run: docker images
+
       - name: Docker run
         run: docker run --rm -t -v "$(pwd):/app" "${DOCKER_TEST_IMAGE_NAME}" -i "${REPO_PATH}" -T
+      
       - name: Test docker
         run: |
           if [ -n "${{ github.ref }}" ]; then
@@ -129,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Set up environment
         uses: ./.github/actions/setup_environment
       - name: push image
