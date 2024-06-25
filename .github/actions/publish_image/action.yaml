@@ -42,11 +42,6 @@ runs:
       echo "DOCKERBUILD_CONTEXT=${{ inputs.DOCKERBUILD_CONTEXT }}" >> $GITHUB_ENV
     shell: bash
 
-  - - name: Set Environment Variables
-    run: |
-      echo "DOCKER_REPO=${{ inputs.ORGANIZATION }}" >> $GITHUB_ENV
-    shell: bash 
-
   - name: download artifact
     uses: actions/download-artifact@v2
     with:

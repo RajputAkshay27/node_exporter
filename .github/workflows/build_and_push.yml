@@ -6,6 +6,7 @@ on:
 env:
   DOCKER_TEST_IMAGE_NAME: quay.io/prometheus/golang-builder:1.22-base
   REPO_PATH: github.com/RajputAkshay27/node_exporter
+  DOCKER_REPO: akshayrajput2710
 
 jobs:
   test:
