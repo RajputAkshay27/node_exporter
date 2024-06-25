@@ -140,8 +140,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up environment
-        uses: ./.github/actions/setup_environment
       - name: push image
         uses: ./.github/actions/publish_image
         with:
