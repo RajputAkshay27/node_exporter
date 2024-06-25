@@ -89,11 +89,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up environment
-        run: make promu
-      - name: Add promu to PATH
-        run: |
-          export GOPATH=/home/runner/go
-          echo /home/runner/go/bin >> $GITHUB_PATH
+        uses: ./.github/actions/setup_environment
+      - name: Download env artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: workspace
+          path: .
       - name: Download build artifacts
         uses: actions/download-artifact@v2
         with:
