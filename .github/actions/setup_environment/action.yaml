@@ -30,9 +30,3 @@ runs:
   - name: Run Docker command
     run: docker run --privileged linuxkit/binfmt:v0.8
     shell: bash
-
-  # - name: Attach Workspace
-  #   uses: actions/upload-artifact@v2
-  #   with:
-  #     name: workspace
-  #     path: .
