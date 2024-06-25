@@ -1,13 +1,13 @@
-ARG ARCH="arm64"
+ARG ARCH="amd64"
 ARG OS="linux"
 FROM quay.io/prometheus/busybox-${OS}-${ARCH}:latest
 
-USER root
-
-ARG ARCH="arm64"
+ARG ARCH="amd64"
 ARG OS="linux"
-ADD --chown=nobody .build/${OS}-${ARCH}/node_exporter /bin/node_exporter
+COPY .build/${OS}-${ARCH}/node_exporter /bin/node_exporter
+
+RUN ["sh", "-c", "ls -l /bin/node_exporter"]
 
 EXPOSE      9100
 USER        nobody
-ENTRYPOINT  [ "/bin/node_exporter" ]
+ENTRYPOINT  [ "sh", "-c","./bin/node_exporter" ]
